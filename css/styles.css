@@ -1467,7 +1467,11 @@ p,blockquote {
   }
   .cover-title {
     top:8%;
-    inset-inline:-3%;
+    left:50%;
+    right:auto;
+    width:106%;
+    /* Compartir el eje de la foto y compensar el contorno real del texto SVG. */
+    translate:calc(-50% + var(--cover-text-offset, 0px)) 0;
   }
   .cover-portrait {
     /* Reducir la foto y alinear la cabeza con el arco, compensando
@@ -1603,12 +1607,12 @@ body {
   }
 }
 @media(max-width:767px) {
-  /* Footer compacto: conservar una reserva inferior para el sello de Netlify. */
+  /* Footer móvil fino, con los datos agrupados a la izquierda. */
   .site-footer {
     grid-template-columns:1fr;
     gap:0;
-    padding-top:10px;
-    padding-bottom:calc(56px + env(safe-area-inset-bottom, 0px));
+    padding-top:6px;
+    padding-bottom:calc(6px + env(safe-area-inset-bottom, 0px));
   }
   .site-footer .wordmark {
     width:max-content;
@@ -1629,6 +1633,7 @@ body {
     grid-column:1;
     justify-self:start;
     text-align:left;
+    font-size:11px;
   }
 }
 @media(min-width:768px) {

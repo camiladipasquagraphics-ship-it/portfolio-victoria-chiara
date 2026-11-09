@@ -59,6 +59,39 @@ const CONFIG = {
   }
   const toggle = $('.menu-toggle');
   const menu = $('#menu');
+  const navLinks = $$('.nav-links a');
+  const sections = $$('main section[id]');
+  let navigationTarget = null;
+
+  function markSection(id) {
+    navLinks.forEach(link => {
+      const selected = link.hash === `#${id}`;
+      if (link.classList.contains('active') !== selected) link.classList.toggle('active', selected);
+      if (selected && link.getAttribute('aria-current') !== 'location') link.setAttribute('aria-current', 'location');
+      else if (!selected) link.removeAttribute('aria-current');
+    });
+  }
+  function updateActiveSection() {
+    // Usar el mismo borde que los enlaces de anclaje, debajo de la barra fija.
+    const anchorLine = header.getBoundingClientRect().bottom + 16;
+    const atBottom = window.scrollY > 0 && window.scrollY + document.documentElement.clientHeight >= document.documentElement.scrollHeight - 2;
+    if (navigationTarget) {
+      const arrived = Math.abs(navigationTarget.getBoundingClientRect().top - anchorLine) <= 3;
+      if (!arrived && !(atBottom && navigationTarget === sections.at(-1))) { markSection(navigationTarget.id); return; }
+      navigationTarget = null;
+    }
+    const current = atBottom ? sections.at(-1) : sections.filter(section => section.getBoundingClientRect().top <= anchorLine + 3).at(-1);
+    markSection(current?.id);
+  }
+  function finishNavigation() {
+    navigationTarget = null;
+    updateActiveSection();
+  }
+  function followSection(target) {
+    navigationTarget = target;
+    markSection(target.id);
+    updateActiveSection();
+  }
   function closeMenu(restoreFocus = false) {
     toggle.setAttribute('aria-expanded', 'false');
     toggle.setAttribute('aria-label', 'Abrir menú');
@@ -71,7 +104,15 @@ const CONFIG = {
     toggle.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
     menu.classList.toggle('open', open); header.classList.toggle('menu-open', open);
   });
-  $$('.nav-links a').forEach(link => link.addEventListener('click', () => closeMenu()));
+  $$('a[href^="#"]').forEach(link => link.addEventListener('click', event => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const target = sections.find(section => `#${section.id}` === link.hash);
+    if (!target) return;
+    // Marcar la opción elegida desde el clic y conservarla durante el scroll
+    // suave: las secciones intermedias no deben reemplazar esa selección.
+    followSection(target);
+    if (menu.contains(link)) closeMenu();
+  }));
   document.addEventListener('click', event => { if (!header.contains(event.target)) closeMenu(); });
   document.addEventListener('keydown', event => { if (event.key === 'Escape' && menu.classList.contains('open')) closeMenu(true); });
   window.matchMedia('(min-width: 992px)').addEventListener('change', event => { if (event.matches) closeMenu(); });
@@ -86,8 +127,27 @@ const CONFIG = {
     $('.back-top').classList.toggle('visible', window.scrollY > 650);
     scrollScheduled = false;
   }
-  window.addEventListener('scroll', () => { if (!scrollScheduled) { scrollScheduled = true; requestAnimationFrame(updateScroll); } }, { passive: true });
+  function scheduleScrollUpdate() {
+    // Resolver la selección en cada evento, sin esperar otro frame ni usar
+    // temporizadores que puedan vencer antes de terminar el scroll nativo.
+    updateActiveSection();
+    if (!scrollScheduled) { scrollScheduled = true; requestAnimationFrame(updateScroll); }
+  }
+  window.addEventListener('scroll', scheduleScrollUpdate, { passive: true });
+  window.addEventListener('resize', scheduleScrollUpdate, { passive: true });
+  // Si el visitante interrumpe el desplazamiento, seguir su posición real.
+  window.addEventListener('wheel', finishNavigation, { passive: true });
+  window.addEventListener('touchstart', finishNavigation, { passive: true });
+  document.addEventListener('keydown', event => {
+    if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key) && !event.target.closest?.('input, textarea, select, [contenteditable]')) finishNavigation();
+  });
+  window.addEventListener('hashchange', () => {
+    const target = sections.find(section => `#${section.id}` === window.location.hash);
+    if (target) followSection(target);
+  });
+  document.fonts?.ready.then(scheduleScrollUpdate);
   updateScroll();
+  updateActiveSection();
 
   if ('IntersectionObserver' in window) {
     if (!motion.matches) {
@@ -97,16 +157,6 @@ const CONFIG = {
       }), { threshold: .08 });
       $$('.reveal').forEach((element, index) => { element.style.setProperty('--delay', `${index % 3 * 75}ms`); reveals.observe(element); });
     }
-    const sections = $$('main section[id]');
-    const active = new IntersectionObserver(() => {
-      const current = sections.filter(section => section.getBoundingClientRect().top <= window.innerHeight * .4).at(-1);
-      $$('.nav-links a').forEach(link => {
-        const selected = link.hash === `#${current?.id}`;
-        link.classList.toggle('active', selected);
-        if (selected) link.setAttribute('aria-current', 'location'); else link.removeAttribute('aria-current');
-      });
-    }, { rootMargin: '-15% 0px -45% 0px', threshold: 0 });
-    sections.forEach(section => active.observe(section));
   }
 
   // Filtrado con animación FLIP: las posiciones se calculan antes y después del cambio.
@@ -204,10 +254,8 @@ const CONFIG = {
   function validate(field) {
     let error = '';
     if (field.required && !field.value.trim()) error = 'Completá este campo.';
-    else if (field.type === 'email' && field.validity.typeMismatch) error = 'Ingresá un email válido.';
     else if (field.id === 'mensaje' && field.value.trim().length < 10) error = 'Contanos un poco más (al menos 10 caracteres).';
     else if (field.type === 'date' && (field.validity.rangeUnderflow || field.validity.badInput)) error = 'Elegí una fecha válida, desde hoy en adelante.';
-    else if (field.type === 'tel' && field.value && !/^[+\d\s().-]{6,40}$/.test(field.value)) error = 'Revisá el teléfono (al menos 6 caracteres).';
     field.setAttribute('aria-invalid', String(Boolean(error))); $(`#${field.id}-error`).textContent = error;
     return !error;
   }
@@ -221,8 +269,6 @@ const CONFIG = {
       '¡Hola Victoria! Quiero consultar por una cobertura fotográfica.',
       '',
       `Nombre: ${value('nombre')}`,
-      `Email: ${value('email')}`,
-      ...(value('telefono') ? [`Teléfono: ${value('telefono')}`] : []),
       `Tipo de evento: ${value('evento')}`,
       ...(value('fecha') ? [`Fecha: ${value('fecha').split('-').reverse().join('/')}`] : []),
       '',
@@ -251,5 +297,30 @@ const CONFIG = {
     headingObserver.observe(aboutHeading);
   } else {
     window.addEventListener('resize', fitAboutText);
+  }
+
+  // En móvil, centrar las letras visibles del SVG con la foto y la pantalla.
+  // Medir después de cargar Pesto Fresco evita depender de métricas de respaldo
+  // o de diferencias en el renderizado de textPath entre navegadores.
+  const coverTitle = $('.cover-title');
+  const coverText = $('text', coverTitle);
+  function centerMobileCover() {
+    if (!window.matchMedia('(max-width: 767px)').matches) {
+      coverTitle.style.removeProperty('--cover-text-offset');
+      return;
+    }
+    const bounds = coverText.getBoundingClientRect();
+    if (!bounds.width) return;
+    const previous = parseFloat(coverTitle.style.getPropertyValue('--cover-text-offset')) || 0;
+    const correction = document.documentElement.clientWidth / 2 - (bounds.left + bounds.width / 2);
+    coverTitle.style.setProperty('--cover-text-offset', `${previous + correction}px`);
+  }
+  centerMobileCover();
+  document.fonts?.ready.then(centerMobileCover);
+  if ('ResizeObserver' in window) {
+    const coverObserver = new ResizeObserver(centerMobileCover);
+    coverObserver.observe($('svg', coverTitle));
+  } else {
+    window.addEventListener('resize', centerMobileCover);
   }
 })();

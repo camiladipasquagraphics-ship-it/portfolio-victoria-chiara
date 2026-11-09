@@ -6,7 +6,7 @@ Sitio estático en HTML5, CSS3, JavaScript vanilla y grilla Bootstrap 5. Abrí `
 
 Una sola página con navegación fija: presentación → sobre mí → trabajos → cómo trabajo → testimonios → contacto. Los filtros permiten recorrer eventos sin cambiar de página; el lightbox muestra únicamente las fotos de la categoría seleccionada. El menú se pliega por debajo de 992 px.
 
-La barra de navegación queda fija arriba, con fondo negro, textos crema y acentos naranjas. El footer naranja permanece oculto al inicio y aparece fijo abajo al deslizar más de 64 px; al volver arriba se oculta de nuevo. Mientras está oculto, no recibe foco ni interacción. Sus alturas se miden para reservar espacio y evitar que tapen el contenido. El footer incluye el ícono de Instagram y el enlace «Seguime en Instagram» a `@vickychiara.ph`, que se abre en una pestaña nueva.
+La barra de navegación queda fija arriba, con fondo negro, textos crema y acentos naranjas. El footer naranja permanece oculto al inicio y aparece fijo abajo al deslizar más de 64 px; al volver arriba se oculta de nuevo. Mientras está oculto, no recibe foco ni interacción. Sus alturas se miden para reservar espacio y evitar que tapen el contenido. En móvil usa un formato compacto con los datos a la izquierda. El footer incluye el ícono de Instagram y el enlace «@vickychiara.ph» en todas las pantallas, que se abre en una pestaña nueva.
 
 ## Fotografías
 
@@ -49,7 +49,7 @@ La biografía, los nombres de eventos y los servicios son textos propuestos. Los
 
 ## Formulario y contactos
 
-El formulario valida nombre, email, tipo de evento y mensaje. Teléfono y fecha son opcionales. Al pulsar «Enviá tu consulta», redirige a WhatsApp al **+54 9 11 2623-2695** con los datos y el mensaje preparados. El visitante revisa y confirma el envío en WhatsApp; la web no envía mensajes automáticamente ni borra los campos.
+El formulario valida nombre, tipo de evento y mensaje; la fecha es opcional. No solicita email ni teléfono. Al pulsar «Enviá tu consulta», redirige a WhatsApp al **+54 9 11 2623-2695** con los datos y el mensaje preparados. El visitante revisa y confirma el envío en WhatsApp; la web no envía mensajes automáticamente ni borra los campos.
 
 Para cambiar el destino, editá `CONFIG.whatsappNumber` en `js/main.js` usando el número internacional completo, sólo con dígitos. Las consultas se realizan desde el formulario; la sección de contacto no ofrece enlaces directos de email ni WhatsApp. No necesita Formspree, EmailJS ni claves de API.
 
