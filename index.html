@@ -37,7 +37,20 @@
           <!-- Texto vectorial editable, curvado con Pesto Fresco; no es parte de la foto. -->
           <svg viewBox="0 0 1400 420" aria-hidden="true" focusable="false">
             <defs><path id="cover-arch" d="M 70,290 Q 700,0 1330,290"></path></defs>
-            <text><textPath href="#cover-arch" startOffset="50%" text-anchor="middle" textLength="1260" lengthAdjust="spacingAndGlyphs">PORTFOLIO</textPath></text>
+            <text class="cover-title-desktop"><textPath href="#cover-arch" startOffset="50%" text-anchor="middle" textLength="1260" lengthAdjust="spacingAndGlyphs">PORTFOLIO</textPath></text>
+            <!-- Móvil: letras sobre el mismo arco, sin textPath para evitar
+                 que algunos navegadores recorten los caracteres finales. -->
+            <g class="cover-title-mobile" text-anchor="middle">
+              <text x="100" y="277" transform="rotate(-24 100 277)">P</text>
+              <text x="250" y="219" transform="rotate(-18 250 219)">O</text>
+              <text x="400" y="178" transform="rotate(-12 400 178)">R</text>
+              <text x="550" y="153" transform="rotate(-6 550 153)">T</text>
+              <text x="700" y="145">F</text>
+              <text x="850" y="153" transform="rotate(6 850 153)">O</text>
+              <text x="1000" y="178" transform="rotate(12 1000 178)">L</text>
+              <text x="1150" y="219" transform="rotate(18 1150 219)">I</text>
+              <text x="1300" y="277" transform="rotate(24 1300 277)">O</text>
+            </g>
           </svg>
         </h1>
         <figure class="cover-portrait">

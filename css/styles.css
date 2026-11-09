@@ -1414,6 +1414,9 @@ p,blockquote {
   letter-spacing:0;
   fill:var(--cream);
 }
+.cover-title-mobile {
+  display:none;
+}
 .cover-portrait {
   position:absolute;
   z-index:2;
@@ -1469,9 +1472,15 @@ p,blockquote {
     top:8%;
     left:50%;
     right:auto;
-    width:106%;
+    width:100%;
     /* Compartir el eje de la foto y compensar el contorno real del texto SVG. */
     translate:calc(-50% + var(--cover-text-offset, 0px)) 0;
+  }
+  .cover-title-desktop {
+    display:none;
+  }
+  .cover-title-mobile {
+    display:inline;
   }
   .cover-portrait {
     /* Reducir la foto y alinear la cabeza con el arco, compensando

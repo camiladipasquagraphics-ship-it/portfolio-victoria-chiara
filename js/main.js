@@ -303,7 +303,7 @@ const CONFIG = {
   // Medir después de cargar Pesto Fresco evita depender de métricas de respaldo
   // o de diferencias en el renderizado de textPath entre navegadores.
   const coverTitle = $('.cover-title');
-  const coverText = $('text', coverTitle);
+  const coverText = $('.cover-title-mobile', coverTitle);
   function centerMobileCover() {
     if (!window.matchMedia('(max-width: 767px)').matches) {
       coverTitle.style.removeProperty('--cover-text-offset');
