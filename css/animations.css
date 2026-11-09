@@ -1,0 +1,73 @@
+/*
+ * Capa de movimiento opcional de Victoria Chiara.
+ * No define colores, fuentes, tamaños, posiciones ni espaciados.
+ * Las clases vc-* sólo se agregan si animations.js inicia correctamente.
+ * Al retirar estos dos archivos se recuperan las animaciones originales.
+ */
+:root {
+  --vc-ease:cubic-bezier(.22,1,.36,1);
+  --vc-reveal:800ms;
+  --vc-stagger:80ms;
+  --vc-micro:280ms;
+}
+
+/* Portada: retimar las entradas YA existentes, sin agregar una segunda
+ * animación sobre el mismo título o retrato ni modificar sus encuadres. */
+.vc-hero :where(.cover-title):not(:where([data-motion="off"], [data-motion="off"] *)) {
+  animation-duration:var(--vc-reveal);
+  animation-timing-function:var(--vc-ease);
+}
+.vc-hero :where(.cover-portrait):not(:where([data-motion="off"], [data-motion="off"] *)) {
+  animation-duration:calc(var(--vc-reveal) + 160ms);
+  animation-delay:120ms;
+  animation-timing-function:var(--vc-ease);
+}
+
+/* Sobre mí, galería, servicios y contacto: conservar el observador, las
+ * máscaras y los estados de main.js. Sólo unificar sus tiempos y stagger.
+ * La especificidad iguala la regla original para ajustar únicamente tiempos. */
+.vc-reveals .reveal:not(:where([data-motion="off"], [data-motion="off"] *)) {
+  transition-duration:var(--vc-reveal);
+  transition-timing-function:var(--vc-ease);
+  transition-delay:calc(var(--vc-stagger) * var(--vc-order, 0));
+}
+.vc-reveals .reveal .photo-slot img:not(:where([data-motion="off"], [data-motion="off"] *)) {
+  transition-duration:calc(var(--vc-reveal) + 160ms);
+  transition-timing-function:var(--vc-ease);
+}
+
+/* Microinteracciones sólo con mouse: las posiciones de reposo siguen
+ * intactas. La galería conserva su zoom original, sin duplicarlo. */
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
+  .vc-hover :where(.service):not(:where([data-motion="off"], [data-motion="off"] *)) {
+    transition:transform var(--vc-micro) var(--vc-ease);
+  }
+  .vc-hover :where(.service:hover):not(:where([data-motion="off"], [data-motion="off"] *)) {
+    transform:translateY(-3px);
+  }
+  .vc-hover :where(.about-photo:hover img):not(:where([data-motion="off"], [data-motion="off"] *)) {
+    transform:scale(1.018);
+  }
+  .vc-hover :where(.text-link span[aria-hidden], .primary-button span[aria-hidden]):not(:where([data-motion="off"], [data-motion="off"] *)) {
+    transition:transform var(--vc-micro) var(--vc-ease);
+  }
+  .vc-hover :where(.text-link:hover span[aria-hidden], .primary-button:hover span[aria-hidden]):not(:where([data-motion="off"], [data-motion="off"] *)) {
+    transform:translate(2px, -2px);
+  }
+}
+
+/* Respuesta equivalente al navegar con teclado, sin cambiar los focos actuales. */
+@media (prefers-reduced-motion:no-preference) {
+  .vc-hover :where(.text-link:focus-visible span[aria-hidden], .primary-button:focus-visible span[aria-hidden]):not(:where([data-motion="off"], [data-motion="off"] *)) {
+    transform:translate(2px, -2px);
+  }
+}
+
+/* main.css ya reduce las animaciones preexistentes. Estas reglas aseguran
+ * también el reposo de las adiciones CSS al cambiar la preferencia en vivo. */
+@media (prefers-reduced-motion:reduce) {
+  .vc-hover :where(.service, .about-photo img, .text-link span[aria-hidden], .primary-button span[aria-hidden]) {
+    transition:none;
+    transform:none;
+  }
+}

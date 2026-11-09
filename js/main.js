@@ -41,18 +41,21 @@ const CONFIG = {
   const header = $('#cabecera');
   // Reservar la altura real de las barras fijas, incluso al cargar las fuentes.
   const footer = $('.site-footer');
+  const footerBrand = $('.wordmark', footer);
   function updateFixedBars() {
+    footer.style.setProperty('--footer-brand-width', `${footerBrand.getBoundingClientRect().width}px`);
     document.documentElement.style.setProperty('--header-height', `${header.offsetHeight}px`);
     document.documentElement.style.setProperty('--footer-height', `${footer.offsetHeight}px`);
   }
   updateFixedBars();
+  document.fonts?.ready.then(updateFixedBars);
   if ('ResizeObserver' in window) {
     const barsObserver = new ResizeObserver(updateFixedBars);
     barsObserver.observe(header);
     barsObserver.observe(footer);
+    barsObserver.observe(footerBrand);
   } else {
     window.addEventListener('resize', updateFixedBars);
-    document.fonts?.ready.then(updateFixedBars);
   }
   const toggle = $('.menu-toggle');
   const menu = $('#menu');
