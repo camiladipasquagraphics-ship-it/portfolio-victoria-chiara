@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#000000">
+  <title>Victoria Chiara — Fotografía de eventos</title>
+  <meta name="description" content="Fotografía de eventos con una mirada sensible y natural. Conocé el universo de Victoria Chiara y conversemos sobre tu próximo evento.">
+  <meta property="og:title" content="Victoria Chiara — Instantes que se quedan">
+  <meta property="og:description" content="Bodas, celebraciones y encuentros. Fotografía de eventos con una mirada personal.">
+  <meta property="og:type" content="website">
+  <!-- Al publicar, agregar og:url y og:image con las direcciones absolutas del sitio y de img/portada-victoria.webp. -->
+  <link rel="preload" href="fonts/PestoFresco-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="fonts/IndieFlower-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <header class="site-header" id="cabecera">
+    <nav class="container-fluid page-gutter nav-inner" aria-label="Navegación principal">
+      <a class="wordmark" href="#inicio" aria-label="Victoria Chiara, inicio">victoria chiara<span>FOTOGRAFÍA</span></a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú"><span></span><span></span></button>
+      <div class="nav-links" id="menu">
+        <a href="#sobre-mi">Sobre mí</a><a href="#trabajos">Trabajos</a><a href="#servicios">Cómo trabajo</a><a href="#contacto" class="nav-contact">Hablemos <span aria-hidden="true">↗</span></a>
+      </div>
+    </nav>
+  </header>
+  <main id="contenido">
+    <section class="hero hero-cover page-gutter" id="inicio" aria-labelledby="hero-title">
+      <div class="cover-canvas">
+        <h1 id="hero-title" class="cover-title">
+          <span class="visually-hidden">Portafolio de Victoria Chiara — Fotografía de eventos</span>
+          <!-- Texto vectorial editable, curvado con Pesto Fresco; no es parte de la foto. -->
+          <svg viewBox="0 0 1400 420" aria-hidden="true" focusable="false">
+            <defs><path id="cover-arch" d="M 70,290 Q 700,0 1330,290"></path></defs>
+            <text><textPath href="#cover-arch" startOffset="50%" text-anchor="middle" textLength="1260" lengthAdjust="spacingAndGlyphs">PORTAFOLIO</textPath></text>
+          </svg>
+        </h1>
+        <figure class="cover-portrait">
+          <!-- FOTO REAL: portada-victoria.webp. Archivo proporcionado por la usuaria, conservado sin modificaciones. -->
+          <img src="img/portada-victoria.webp" alt="Victoria Chiara sosteniendo su cámara frente al rostro y apuntando hacia el espectador" width="4875" height="6033" fetchpriority="high">
+        </figure>
+        <div class="cover-caption"><p>VICTORIA CHIARA</p><p>TU FUTURA PH</p></div>
+      </div>
+    </section>
+    <div class="editorial-band">
+      <p class="visually-hidden">LO ESPONTÁNEO · LO IMPERFECTO · LO QUE SE SIENTE</p>
+      <div class="editorial-track" aria-hidden="true">
+        <div class="editorial-group"><span>LO ESPONTÁNEO</span><span class="editorial-separator">✳</span><span>LO IMPERFECTO</span><span class="editorial-separator">✳</span><span>LO QUE SE SIENTE</span><span class="editorial-separator">✳</span></div>
+        <div class="editorial-group"><span>LO ESPONTÁNEO</span><span class="editorial-separator">✳</span><span>LO IMPERFECTO</span><span class="editorial-separator">✳</span><span>LO QUE SE SIENTE</span><span class="editorial-separator">✳</span></div>
+      </div>
+    </div>
+    <section class="section-space page-gutter" id="sobre-mi" aria-labelledby="about-title">
+      <div class="row align-items-center about-row">
+        <div class="col-md-5 reveal">
+          <figure class="photo-slot about-photo has-photo">
+            <!-- FOTO: encuadrar.webp. Composición tipo Polaroid proporcionada por la usuaria. -->
+            <img src="img/encuadrar.webp" alt="Foto de Victoria con su cámara en un marco Polaroid con clip naranja y la frase Encuadrar la vida" width="1169" height="707" loading="lazy">
+          </figure>
+        </div>
+        <div class="col-md-6 offset-md-1 about-copy reveal">
+          <p class="eyebrow">01 / SOBRE MÍ</p>
+          <h2 id="about-title">HOLA! SOY VICTORIA Y ME MUEVE LO REAL</h2>
+          <!-- Texto de presentación de ejemplo: reemplazar por la historia real de Victoria. -->
+          <p>Creo en las fotos que te hacen volver a ese abrazo, a esa risa y a todo lo que pasa cuando te olvidás de la cámara.</p>
+          <p>Mi forma de trabajar empieza por conocerte. Te acompaño de cerca y observo con calma, para que disfrutes tu evento mientras guardo lo que lo hace único.</p>
+          <p><strong>No busco momentos perfectos. Busco los tuyos.</strong></p>
+          <a class="text-link about-cta" href="#contacto">CONOZCÁMONOS <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+    </section>
+    <section class="section-space portfolio-section page-gutter" id="trabajos" aria-labelledby="portfolio-title">
+      <div class="section-heading reveal"><div><p class="eyebrow">02 / HISTORIAS EN IMÁGENES</p><h2 id="portfolio-title">Cada encuentro, <em>un universo</em></h2></div><p>Pequeños fragmentos de días enormes, elegí una historia y mirala de cerca</p></div>
+      <div class="filters" role="group" aria-label="Filtrar trabajos por tipo de evento">
+        <button class="filter active" data-filter="all" aria-pressed="true">Todos <sup>08</sup></button><button class="filter" data-filter="bodas" aria-pressed="false">Bodas</button><button class="filter" data-filter="cumple" aria-pressed="false">Cumpleaños & XV</button><button class="filter" data-filter="corporativos" aria-pressed="false">Corporativos</button><button class="filter" data-filter="sociales" aria-pressed="false">Sociales</button>
+      </div>
+      <p class="gallery-announcement visually-hidden" role="status" aria-live="polite"></p>
+      <!-- Todos los títulos de eventos son ejemplos editables. -->
+      <div class="gallery">
+        <figure class="gallery-item tall reveal" data-category="bodas"><button class="photo-slot gallery-open" data-label="BODAS / 01" aria-label="Abrir Siempre nosotros, fotografía de boda"><!-- FOTO: evento-01.jpg. Pareja, vertical 4:5, 1200 × 1500 px. --><img data-src="img/evento-01.jpg" alt="Una pareja comparte un abrazo después de la ceremonia" width="1200" height="1500" loading="lazy"><span class="photo-overlay"><span>Siempre nosotros</span><span aria-hidden="true">↗</span></span></button><figcaption><span>Siempre nosotros</span><span>BODAS</span></figcaption></figure>
+        <figure class="gallery-item short reveal" data-category="cumple"><button class="photo-slot gallery-open" data-label="CELEBRACIONES / 02" aria-label="Abrir Una noche para brillar"><!-- FOTO: evento-02.jpg. Fiesta de XV, horizontal 4:3, 1200 × 900 px. --><img data-src="img/evento-02.jpg" alt="La emoción de una quinceañera al celebrar con sus amigas" width="1200" height="900" loading="lazy"><span class="photo-overlay"><span>Una noche para brillar</span><span aria-hidden="true">↗</span></span></button><figcaption><span>Una noche para brillar</span><span>CUMPLEAÑOS & XV</span></figcaption></figure>
+        <figure class="gallery-item tall reveal" data-category="sociales"><button class="photo-slot gallery-open" data-label="ENCUENTROS / 03" aria-label="Abrir La alegría de encontrarnos"><!-- FOTO: evento-03.jpg. Reunión familiar, vertical 4:5, 1200 × 1500 px. --><img data-src="img/evento-03.jpg" alt="Risas y abrazos entre amigos durante un encuentro al aire libre" width="1200" height="1500" loading="lazy"><span class="photo-overlay"><span>La alegría de encontrarnos</span><span aria-hidden="true">↗</span></span></button><figcaption><span>La alegría de encontrarnos</span><span>SOCIALES</span></figcaption></figure>
+        <figure class="gallery-item short reveal" data-category="corporativos"><button class="photo-slot gallery-open" data-label="CORPORATIVOS / 04" aria-label="Abrir Ideas que conectan"><!-- FOTO: evento-04.jpg. Evento de marca, horizontal 4:3, 1200 × 900 px. --><img data-src="img/evento-04.jpg" alt="Participantes conversando en un encuentro corporativo" width="1200" height="900" loading="lazy"><span class="photo-overlay"><span>Ideas que conectan</span><span aria-hidden="true">↗</span></span></button><figcaption><span>Ideas que conectan</span><span>CORPORATIVOS</span></figcaption></figure>
+        <figure class="gallery-item short reveal" data-category="bodas"><button class="photo-slot gallery-open" data-label="BODAS / 05" aria-label="Abrir Todo empieza acá"><!-- FOTO: evento-05.jpg. Ceremonia, horizontal 4:3, 1200 × 900 px. --><img data-src="img/evento-05.jpg" alt="Manos entrelazadas durante el intercambio de anillos" width="1200" height="900" loading="lazy"><span class="photo-overlay"><span>Todo empieza acá</span><span aria-hidden="true">↗</span></span></button><figcaption><span>Todo empieza acá</span><span>BODAS</span></figcaption></figure>
+        <figure class="gallery-item tall reveal" data-category="cumple"><button class="photo-slot gallery-open" data-label="CELEBRACIONES / 06" aria-label="Abrir Un deseo más"><!-- FOTO: evento-06.jpg. Cumpleaños, vertical 4:5, 1200 × 1500 px. --><img data-src="img/evento-06.jpg" alt="Un momento de alegría al soplar las velas de cumpleaños" width="1200" height="1500" loading="lazy"><span class="photo-overlay"><span>Un deseo más</span><span aria-hidden="true">↗</span></span></button><figcaption><span>Un deseo más</span><span>CUMPLEAÑOS & XV</span></figcaption></figure>
+        <figure class="gallery-item short reveal" data-category="sociales"><button class="photo-slot gallery-open" data-label="ENCUENTROS / 07" aria-label="Abrir Alrededor de la mesa"><!-- FOTO: evento-07.jpg. Celebración, horizontal 4:3, 1200 × 900 px. --><img data-src="img/evento-07.jpg" alt="Una mesa preparada para una celebración íntima entre seres queridos" width="1200" height="900" loading="lazy"><span class="photo-overlay"><span>Alrededor de la mesa</span><span aria-hidden="true">↗</span></span></button><figcaption><span>Alrededor de la mesa</span><span>SOCIALES</span></figcaption></figure>
+        <figure class="gallery-item tall reveal" data-category="corporativos"><button class="photo-slot gallery-open" data-label="CORPORATIVOS / 08" aria-label="Abrir Una visión compartida"><!-- FOTO: evento-08.jpg. Presentación de marca, vertical 4:5, 1200 × 1500 px. --><img data-src="img/evento-08.jpg" alt="Una persona presenta un proyecto durante un evento de marca" width="1200" height="1500" loading="lazy"><span class="photo-overlay"><span>Una visión compartida</span><span aria-hidden="true">↗</span></span></button><figcaption><span>Una visión compartida</span><span>CORPORATIVOS</span></figcaption></figure>
+      </div>
+    </section>
+    <section class="services-section section-space page-gutter" id="servicios" aria-labelledby="services-title">
+      <div class="section-heading reveal"><div><p class="eyebrow">03 / CÓMO TRABAJO</p><h2 id="services-title">Vos viví el momento, <em>yo lo guardo</em></h2></div><p>Cada evento tiene su ritmo, la cobertura también</p></div>
+      <div class="row g-4 service-grid">
+        <article class="col-md-4 reveal"><div class="service"><span class="service-number">01</span><h3>Bodas & uniones</h3><p>Desde los preparativos hasta los abrazos de la fiesta. Un relato cercano de un día que lo cambia todo.</p><a href="#contacto" class="text-link" data-event="Boda">Consultá por tu fecha <span aria-hidden="true">↗</span></a></div></article>
+        <article class="col-md-4 reveal"><div class="service"><span class="service-number">02</span><h3>Celebraciones</h3><p>Cumpleaños, quince y encuentros que reúnen a quienes más querés. La energía de la fiesta, en imágenes.</p><a href="#contacto" class="text-link" data-event="Cumpleaños o XV">Contame qué celebrás <span aria-hidden="true">↗</span></a></div></article>
+        <article class="col-md-4 reveal"><div class="service"><span class="service-number">03</span><h3>Eventos & marcas</h3><p>Encuentros, lanzamientos y experiencias de marca. Una cobertura cuidada y alineada con tu identidad.</p><a href="#contacto" class="text-link" data-event="Evento corporativo">Hablemos de tu proyecto <span aria-hidden="true">↗</span></a></div></article>
+      </div>
+      <div class="process row g-4"><div class="col-md-4 reveal"><span>01 / CONVERSAMOS</span><p>Me contás tu idea, la fecha y lo que imaginás. Juntas definimos una cobertura a tu medida.</p></div><div class="col-md-4 reveal"><span>02 / LO VIVIMOS</span><p>Te acompaño con una mirada atenta y discreta, dejando que los momentos sucedan.</p></div><div class="col-md-4 reveal"><span>03 / LO REVIVÍS</span><p>Recibís una selección editada en una galería digital. Plazos y detalles acordados antes del evento.</p></div></div>
+    </section>
+    <section class="testimonials section-space page-gutter" aria-labelledby="testimonials-title" aria-roledescription="carrusel">
+      <h2 id="testimonials-title">TESTIMONIOS</h2>
+      <div class="testimonial-slide" id="opinion" aria-live="polite"><blockquote>“Nos hizo sentir tan cómodos que nos olvidamos de la cámara. Las fotos nos devuelven a ese día cada vez que las miramos.”</blockquote><p>MARÍA & TOMÁS <span> / BODA · TEXTO DE EJEMPLO</span></p></div>
+      <div class="testimonial-controls"><button class="circle-button" id="testimonial-prev" aria-label="Testimonio anterior">←</button><span id="testimonial-count" aria-label="Testimonio 1 de 3">01 / 03</span><button class="circle-button" id="testimonial-next" aria-label="Testimonio siguiente">→</button></div>
+    </section>
+    <section class="contact-section section-space page-gutter" id="contacto" aria-labelledby="contact-title">
+      <div class="row g-5"><div class="col-lg-5 reveal"><p class="eyebrow">05 / EMPECEMOS UNA HISTORIA</p><h2 id="contact-title">Tu próximo recuerdo empieza <em>con un hola</em></h2><p class="contact-intro">¿Querés que trabajemos juntos? Contame la fecha, el lugar y la idea de tu evento en el formulario. Al terminar, vas a pasar a nuestro chat de WhatsApp con la consulta lista para enviar.</p></div>
+        <div class="col-lg-6 offset-lg-1 reveal">
+          <!-- FORMULARIO: valida los campos y abre WhatsApp. Número configurable en CONFIG.whatsappNumber de js/main.js. -->
+          <form id="contact-form" novalidate><p class="form-note">Los campos con * son obligatorios.</p><div class="row g-4">
+            <div class="col-sm-6"><label for="nombre">Tu nombre *</label><input id="nombre" name="nombre" autocomplete="name" required maxlength="100" aria-describedby="nombre-error"><span class="field-error" id="nombre-error"></span></div>
+            <div class="col-sm-6"><label for="email">Email *</label><input id="email" name="email" type="email" autocomplete="email" required maxlength="254" aria-describedby="email-error"><span class="field-error" id="email-error"></span></div>
+            <div class="col-sm-6"><label for="telefono">Teléfono</label><input id="telefono" name="telefono" type="tel" autocomplete="tel" maxlength="40" aria-describedby="telefono-error"><span class="field-error" id="telefono-error"></span></div>
+            <div class="col-sm-6"><label for="evento">¿Qué celebramos? *</label><select id="evento" name="evento" required aria-describedby="evento-error"><option value="">Elegí tu evento</option><option>Boda</option><option>Cumpleaños o XV</option><option>Evento corporativo</option><option>Evento social / Otro</option></select><span class="field-error" id="evento-error"></span></div>
+            <div class="col-12"><label for="fecha">Fecha del evento</label><input id="fecha" name="fecha" type="date" aria-describedby="fecha-error"><span class="field-error" id="fecha-error"></span></div>
+            <div class="col-12"><label for="mensaje">Contame un poquito más *</label><textarea id="mensaje" name="mensaje" rows="3" required minlength="10" maxlength="5000" placeholder="La idea, el lugar, eso que no puede faltar…" aria-describedby="mensaje-error"></textarea><span class="field-error" id="mensaje-error"></span></div>
+          </div><button type="submit" class="primary-button">Enviá tu consulta <span aria-hidden="true">↗</span></button><p class="form-status" id="form-status" role="status" aria-live="polite">Se abrirá WhatsApp con tu consulta preparada. Podés revisarla y enviarla desde allí.</p></form>
+        </div></div>
+    </section>
+  </main>
+  <footer class="site-footer page-gutter" inert>
+    <a class="wordmark" href="#inicio">victoria chiara<span>FOTOGRAFÍA</span></a>
+    <a class="footer-instagram" href="https://www.instagram.com/vickychiara.ph?srtk=YXpreWpmOGhxc3pl" target="_blank" rel="noopener noreferrer" aria-label="Seguime en Instagram: @vickychiara.ph (se abre en una pestaña nueva)">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle></svg>
+      <span>Seguime en Instagram</span>
+    </a>
+    <small>© <span id="year">2026</span> Victoria Chiara.</small>
+  </footer>
+  <a href="#inicio" class="back-top" aria-label="Volver arriba">↑</a>
+  <dialog id="lightbox" class="lightbox" aria-labelledby="lightbox-title"><div class="lightbox-bar"><p id="lightbox-title"></p><button id="lightbox-close" class="circle-button" aria-label="Cerrar fotografía">×</button></div><div class="lightbox-stage"><button id="lightbox-prev" class="circle-button" aria-label="Fotografía anterior">←</button><figure class="photo-slot lightbox-photo"><img id="lightbox-image" alt=""><span class="placeholder-note" id="lightbox-placeholder" aria-hidden="true">Una historia por contar.</span></figure><button id="lightbox-next" class="circle-button" aria-label="Fotografía siguiente">→</button></div><p id="lightbox-count" aria-live="polite"></p><p class="lightbox-help">← → para explorar · Esc para cerrar · Deslizá en el celular</p></dialog>
+</body>
+</html>

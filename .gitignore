@@ -1,0 +1,15 @@
+# Archivos del sistema y configuración privada local.
+.DS_Store
+Thumbs.db
+desktop.ini
+.env
+.env.*
+!.env.example
+*.log
+
+# Originales locales duplicados; el sitio usa las copias dentro de img/.
+/encuadrar.webp
+/portada-victoria.webp
+
+# Recorte anterior que ya no utiliza la portada.
+/img/victoria-portada.png
