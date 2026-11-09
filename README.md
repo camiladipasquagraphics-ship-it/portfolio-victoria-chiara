@@ -1,6 +1,6 @@
 # Victoria Chiara · Portfolio de fotografía
 
-Sitio estático en HTML5, CSS3, JavaScript vanilla y grilla Bootstrap 5. Abrí `index.html` en un navegador. No requiere instalación ni compilación. Bootstrap necesita conexión a Internet; las tipografías se incluyen localmente en `fonts/`. El menú, las animaciones y el lightbox son propios y no requieren JavaScript de Bootstrap.
+Sitio estático en HTML5, CSS3, JavaScript vanilla y grilla Bootstrap 5. Abrí `index.html` en un navegador. No requiere instalación ni compilación. Bootstrap necesita conexión a Internet; las tipografías se incluyen localmente en `fonts/`. El menú y el lightbox son propios y no requieren JavaScript de Bootstrap. Las animaciones usan GSAP, ScrollTrigger y Lenis, incluidos localmente con versiones fijas; ver ANIMACIONES.md.
 
 ## Recorrido
 

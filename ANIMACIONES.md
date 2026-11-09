@@ -1,38 +1,45 @@
-# Animaciones opcionales
+# Animaciones con GSAP, ScrollTrigger y Lenis
 
-Los únicos cambios en `index.html` son dos enlaces: `css/animations.css` después de `styles.css` y `js/animations.js` después de `main.js`, con `defer`. No se modificaron el HTML de las secciones, el CSS base ni el JavaScript funcional.
+El sitio sigue siendo HTML, CSS y JavaScript estático: no necesita npm ni compilación. Las dependencias están instaladas localmente y se cargan con `defer` antes de `main.js` y `animations.js`.
 
-## Qué se anima
+## Dependencias
 
-- **Portada:** se coordinan los tiempos de las entradas originales de título y retrato; las dos firmas aparecen escalonadas. Se mantienen el tamaño, la posición y la superposición actuales.
-- **Sobre mí, galería, servicios y contacto:** se reutilizan los revelados, máscaras y observador existentes, unificando duración, curva y stagger. La galería conserva sus filtros y zoom originales.
-- **Testimonios y filtros:** entradas sutiles con desplazamiento vertical de 8 px en móvil o 14 px en escritorio. El carrusel conserva su transición original.
-- **Mouse:** elevación de 3 px en servicios, zoom de 1,8 % en la foto de Sobre mí y desplazamiento de 2 px en las flechas de enlaces y envío. No se agregan efectos de hover al tacto.
-- **Navegación:** entrada de cortina y enlaces escalonados al abrir el menú móvil; pulso suave del enlace activo. Se mantiene el cierre inmediato original, sin alterar el foco ni los clics.
-- **Lightbox:** desplazamiento sutil al abrir/cerrar y fundido al cambiar de fotografía, manteniendo los controles, Escape, swipe y retorno del foco.
+- GSAP 3.13.0: `js/vendor/gsap.min.js`.
+- ScrollTrigger 3.13.0: `js/vendor/ScrollTrigger.min.js`.
+- Lenis 1.3.11: `js/vendor/lenis.min.js` y `css/lenis.css`.
 
-No se agregó preloader, barra de progreso, contadores ni parallax: introducirían elementos nuevos, cifras inexistentes o movimiento del encuadre aprobado. La cinta continua y el footer mantienen su funcionamiento anterior. No se usa GSAP ni otra dependencia.
+Distribuciones originales de jsDelivr, con versiones fijas. GSAP y ScrollTrigger conservan sus cabeceras de licencia; Lenis incluye su licencia MIT en `js/vendor/lenis.LICENSE.txt`. No editar archivos minificados para ajustar los efectos.
 
-## Velocidades y retrasos
+## Efectos
 
-Al principio de `css/animations.css`:
+- Portada: entrada coordinada del título SVG, retrato y firmas.
+- Textos: revelados por bloques con opacidad, desplazamiento y entradas escalonadas, conservando las fuentes, los saltos de línea y la accesibilidad.
+- Fotografías: máscaras `clip-path` en los marcos existentes, también en los placeholders. Sin cambios en el encuadre ni archivos de imagen.
+- ScrollTrigger: revelados una sola vez al entrar en pantalla. En escritorio, desplazamiento suave de 36 px en el título y 18 px en el retrato durante la salida de portada.
+- Galería: transiciones FLIP con GSAP después del filtrado. Se completan los revelados antes de medir para evitar transformaciones superpuestas.
+- Menú móvil, lightbox y testimonios: entradas y fundidos breves; se conservan controles, foco, Escape y swipe.
+- Mouse y teclado: microinteracciones de servicios y flechas.
 
-```css
-:root {
-  --vc-ease:cubic-bezier(.22,1,.36,1);
-  --vc-reveal:800ms;
-  --vc-stagger:80ms;
-  --vc-micro:280ms;
-}
-```
+## Rendimiento y adaptación
 
-Los revelados duran 800 ms, las máscaras/retrato 960 ms y las interacciones 280–360 ms. `FEATURES`, al principio de `js/animations.js`, permite desactivar familias completas: `hero`, `reveals`, `hover`, `menu`, `lightbox` y `activeLink`.
+Lenis usa el ticker de GSAP y notifica a ScrollTrigger, sin un segundo bucle RAF. El scroll se recalcula tras fuentes, imágenes, filtros, testimonios y cambios de altura. Se respetan las barras fijas al navegar por anclas. El lightbox pausa Lenis y vuelve a habilitarlo al cerrar.
 
-## Desactivar
+Lenis y el parallax sólo se activan desde 992 px con mouse o trackpad. En pantallas menores o dispositivos táctiles se conserva el scroll nativo, con entradas de 12 px y 550 ms, sin stagger entre tarjetas; en escritorio son de 28 px y 850 ms. No se agregan secciones fijadas, preloader ni elementos gráficos.
 
-- **Un elemento o sección:** agregar `data-motion="off"` a su etiqueta. No cambia su estructura ni su diseño. Detiene las nuevas animaciones de ese elemento y sus descendientes; conserva las que la página ya tenía.
-- **Toda la capa nueva temporalmente:** ejecutar `VictoriaMotion.disable()`; reactivar con `VictoriaMotion.enable()`.
-- **Quitar la capa nueva permanentemente:** retirar los dos enlaces de `index.html` y, si se desea, borrar `css/animations.css` y `js/animations.js`. La página vuelve al comportamiento anterior, incluidas sus animaciones originales.
-- **Reducir absolutamente todo el movimiento, también el original:** activar «Reducir movimiento» en el sistema. La capa escucha cambios en vivo, cancela sus efectos y deja el contenido visible; el CSS original ya contempla esa preferencia.
+Se animan principalmente `transform` y `opacity`, con máscaras únicamente durante las entradas. No se conserva `will-change`. Los listeners, observadores, triggers, tweens y Lenis se limpian al desactivar la capa o abandonar la página. Los revelados ya vistos no se repiten al cambiar de breakpoint.
 
-No se establecen estados ocultos por defecto ni se conserva `will-change`. Los efectos agregados animan sólo `transform`, `opacity` y `clip-path`; al finalizar se eliminan. Sin esta capa, los estilos de reposo, dimensiones, textos, imágenes y distribución siguen siendo los originales.
+## Controles y accesibilidad
+
+- `VictoriaMotion.disable()` desactiva y restaura los estilos de la capa.
+- `VictoriaMotion.enable()` vuelve a activarla.
+- `VictoriaMotion.refresh()` recalcula las posiciones después de cambios externos de contenido.
+- `data-motion="off"` en un elemento o sección lo excluye de los efectos nuevos al inicializar.
+- `prefers-reduced-motion: reduce` cancela la capa y Lenis, también al cambiar la preferencia en vivo. El CSS original desactiva las animaciones preexistentes.
+
+El contenido permanece visible sin JavaScript. Si GSAP o ScrollTrigger no cargan, `main.js` conserva el revelado original con IntersectionObserver. Si sólo falla Lenis, siguen funcionando GSAP y la navegación nativa. El contenido que recibe foco se revela inmediatamente.
+
+## Ajustes
+
+Modificar las distancias y duraciones en `js/animations.js`; las microinteracciones se controlan mediante `--vc-micro` y `--vc-ease` en `css/animations.css`. `main.js` sólo delega las transiciones del filtrado, los testimonios y la navegación; mantiene la lógica funcional.
+
+Referencias: [GSAP context](https://gsap.com/docs/v3/GSAP/gsap.context()), [ScrollTrigger](https://gsap.com/docs/v3/Plugins/ScrollTrigger/), [Lenis](https://github.com/darkroomengineering/lenis).

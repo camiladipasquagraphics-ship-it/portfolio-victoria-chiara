@@ -112,6 +112,7 @@ const CONFIG = {
     // suave: las secciones intermedias no deben reemplazar esa selección.
     followSection(target);
     if (menu.contains(link)) closeMenu();
+    if (window.VictoriaMotion?.scrollTo(target, link.hash)) event.preventDefault();
   }));
   document.addEventListener('click', event => { if (!header.contains(event.target)) closeMenu(); });
   document.addEventListener('keydown', event => { if (event.key === 'Escape' && menu.classList.contains('open')) closeMenu(true); });
@@ -149,7 +150,7 @@ const CONFIG = {
   updateScroll();
   updateActiveSection();
 
-  if ('IntersectionObserver' in window) {
+  if ('IntersectionObserver' in window && !(window.gsap && window.ScrollTrigger)) {
     if (!motion.matches) {
       document.body.classList.add('motion-ready');
       const reveals = new IntersectionObserver(entries => entries.forEach(entry => {
@@ -164,6 +165,7 @@ const CONFIG = {
   let selectedItems = items;
   let filterAnimations = [];
   $$('.filter').forEach(button => button.addEventListener('click', () => {
+    window.VictoriaMotion?.prepareFilter();
     filterAnimations.forEach(animation => animation.cancel()); filterAnimations = [];
     const before = new Map(items.filter(item => !item.hidden).map(item => [item, item.getBoundingClientRect()]));
     $$('.filter').forEach(filter => { const active = filter === button; filter.classList.toggle('active', active); filter.setAttribute('aria-pressed', String(active)); });
@@ -173,12 +175,14 @@ const CONFIG = {
     selectedItems.forEach(item => {
       item.classList.add('is-visible');
       const previous = before.get(item); const next = item.getBoundingClientRect();
-      if (!motion.matches && item.animate) filterAnimations.push(item.animate([
+      if (window.VictoriaMotion?.enabled) window.VictoriaMotion.filterItem(item, previous, next);
+      else if (!motion.matches && item.animate) filterAnimations.push(item.animate([
         { opacity: previous ? 1 : 0, transform: previous ? `translate(${previous.left - next.left}px, ${previous.top - next.top}px)` : 'translateY(18px)' },
         { opacity: 1, transform: 'translate(0,0)' }
       ], { duration: 520, easing: 'cubic-bezier(.22,1,.36,1)' }));
     });
     $('.gallery-announcement').textContent = `${selectedItems.length} fotografías. Categoría: ${button.textContent.trim()}.`;
+    window.VictoriaMotion?.refresh();
   }));
 
   // Dialog nativo: foco contenido, fondo inerte y regreso al disparador al cerrar.
@@ -242,7 +246,8 @@ const CONFIG = {
     preventWidows($('#opinion'));
     $('#testimonial-count').textContent = `0${quoteIndex + 1} / 03`;
     $('#testimonial-count').setAttribute('aria-label', `Testimonio ${quoteIndex + 1} de 3`);
-    if (!motion.matches && $('#opinion').animate) $('#opinion').animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 400 });
+    if (window.VictoriaMotion?.enabled) window.VictoriaMotion.testimonial();
+    else if (!motion.matches && $('#opinion').animate) $('#opinion').animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 400 });
   }
   $('#testimonial-prev').addEventListener('click', () => changeQuote(-1));
   $('#testimonial-next').addEventListener('click', () => changeQuote(1));

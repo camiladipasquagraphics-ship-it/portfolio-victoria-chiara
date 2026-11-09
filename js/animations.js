@@ -1,218 +1,206 @@
-/*
- * Movimiento opcional, sin dependencias ni modificaciones a main.js.
- * Todo el contenido es visible por defecto: no hay clases de espera ocultas.
- * Web Animations API aplica únicamente transform, opacity y clip-path;
- * cada efecto se elimina al terminar o al activar movimiento reducido.
- */
+/* Motion is progressive: without dependencies every section remains readable. */
 (() => {
   'use strict';
-
-  // Desactivar aquí una familia de efectos antes de cargar la página.
-  const FEATURES = {
-    hero:true,
-    reveals:true,
-    hover:true,
-    menu:true,
-    lightbox:true,
-    activeLink:true,
-  };
+  const { gsap, ScrollTrigger, Lenis } = window;
+  if (!gsap || !ScrollTrigger) return;
+  gsap.registerPlugin(ScrollTrigger);
+  // Keep Lenis and scroll animations on the same elapsed-time clock.
+  gsap.ticker.lagSmoothing(0);
   const root = document.documentElement;
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const desktop = window.matchMedia('(min-width: 992px)');
-  const smallScreen = window.matchMedia('(max-width: 767px)');
-  const classes = ['vc-hero', 'vc-reveals', 'vc-hover'];
-  const running = new Set();
-  const owned = new Map();
-  let dispose = [];
-  let enabled = false;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const desktop = matchMedia('(min-width: 992px) and (hover: hover) and (pointer: fine)');
+  const all = (selector, scope = document) => [...scope.querySelectorAll(selector)]
+    .filter(element => !element.closest('[data-motion="off"]'));
+  const seen = new WeakSet();
+  const entrances = new Map();
+  let context, lenis, tick, refreshCall;
+  let cleanups = [];
   let stopped = false;
+  let enabled = false;
+  let heroPlayed = false;
 
-  const all = (selector, scope = document) => [...scope.querySelectorAll(selector)];
-  const allowed = element => element && !element.closest('[data-motion="off"]');
-  const ease = () => getComputedStyle(root).getPropertyValue('--vc-ease').trim() || 'cubic-bezier(.22,1,.36,1)';
-  function time(name, fallback) {
-    const value = getComputedStyle(root).getPropertyValue(name).trim();
-    const number = parseFloat(value);
-    return Number.isFinite(number) ? Math.max(0, number * (value.endsWith('ms') ? 1 : 1000)) : fallback;
+  function listen(target, type, handler, options) {
+    target?.addEventListener(type, handler, options);
+    cleanups.push(() => target?.removeEventListener(type, handler, options));
   }
-
-  // Sólo cancelar efectos propios, nunca los filtros, el carrusel o el hero originales.
-  function cancelFor(element) {
-    owned.get(element)?.cancel();
-  }
-  function play(element, frames, duration, delay = 0) {
-    if (!enabled || reduced.matches || !allowed(element) || !element.animate) return;
-    cancelFor(element);
-    try {
-      const animation = element.animate(frames, {
-        duration, delay, easing:ease(), fill:'backwards',
-      });
-      running.add(animation);
-      owned.set(element, animation);
-      const release = () => {
-        running.delete(animation);
-        if (owned.get(element) === animation) owned.delete(element);
-      };
-      animation.onfinish = () => { release(); animation.cancel(); };
-      animation.oncancel = release;
-    } catch {
-      // Sin soporte o ante un error, el estilo original permanece visible.
-    }
-  }
-  function enter(element, index = 0) {
-    const distance = smallScreen.matches ? 8 : 14;
-    play(element, [
-      { opacity:0, transform:`translateY(${distance}px)` },
-      { opacity:1, transform:'translateY(0)' },
-    ], time('--vc-reveal', 800), index * time('--vc-stagger', 80));
-  }
-  function listen(target, event, handler, options) {
+  function watch(target, handler, options) {
     if (!target) return;
-    target.addEventListener(event, handler, options);
-    dispose.push(() => target.removeEventListener(event, handler, options));
+    const observer = new MutationObserver(handler);
+    observer.observe(target, options);
+    cleanups.push(() => observer.disconnect());
   }
-  function watch(element, callback, options) {
-    if (!element || !window.MutationObserver) return;
-    const observer = new MutationObserver(callback);
-    observer.observe(element, options);
-    dispose.push(() => observer.disconnect());
+  function refresh() {
+    if (!enabled) return;
+    refreshCall?.kill();
+    refreshCall = gsap.delayedCall(.12, () => {
+      lenis?.resize();
+      ScrollTrigger.refresh();
+    });
   }
-
+  // Event-created tweens belong to this context too, so cleanup is complete.
+  function animate(callback) {
+    if (enabled && context) context.add(callback);
+  }
   function start() {
-    if (enabled || stopped || reduced.matches || !Element.prototype.animate) return;
+    if (enabled || stopped || reduced.matches) return;
     enabled = true;
+    root.classList.add('vc-motion', 'vc-hover');
+    const compact = !desktop.matches;
+    const distance = compact ? 12 : 28;
+    const duration = compact ? .55 : .85;
     try {
-      const revealTime = time('--vc-reveal', 800);
-      const micro = time('--vc-micro', 280);
-      if (FEATURES.hero && allowed(document.querySelector('.hero-cover'))) {
-        root.classList.add('vc-hero');
-        // Portada: completar el título y retrato originales con las dos firmas.
-        all('.cover-caption p').forEach((element, index) => {
-          play(element, [
-            { opacity:0, transform:'translateY(10px)' },
-            { opacity:1, transform:'translateY(0)' },
-          ], revealTime, 360 + index * time('--vc-stagger', 80));
-        });
-      }
-      if (FEATURES.hover) root.classList.add('vc-hover');
-
-      if (FEATURES.reveals) {
-        root.classList.add('vc-reveals');
-        // Reutilizar los revelados y máscaras existentes; sólo asignar el orden.
-        all('.reveal').forEach((element, index) => {
-          const previous = element.style.getPropertyValue('--vc-order');
-          element.style.setProperty('--vc-order', String(index % 3));
-          dispose.push(() => {
-            if (previous) element.style.setProperty('--vc-order', previous);
-            else element.style.removeProperty('--vc-order');
-          });
-        });
-        // Sólo revelar elementos que NO tienen ya el reveal de main.js.
-        // Así las tarjetas, fotos y formulario no reciben dos animaciones iguales.
-        if ('IntersectionObserver' in window) {
-          const targets = all('.filters, #testimonials-title, .testimonial-slide, .testimonial-controls')
-            .filter(element => allowed(element) && !element.closest('.reveal'));
-          const observer = new IntersectionObserver(entries => {
-            entries.filter(entry => entry.isIntersecting).forEach((entry, index) => {
-              observer.unobserve(entry.target);
-              enter(entry.target, Math.min(index, 2));
-            });
-          }, { threshold:.12 });
-          targets.forEach(element => observer.observe(element));
-          dispose.push(() => observer.disconnect());
+      context = gsap.context(() => {});
+      context.add(() => {
+        if (!heroPlayed && scrollY < innerHeight * .5) {
+          heroPlayed = true;
+          gsap.timeline({ defaults:{ ease:'power3.out' } })
+            .from(all('.cover-title'), { opacity:0, y:compact ? 12 : 30, duration }, 0)
+            .from(all('.cover-portrait'), { opacity:0, y:compact ? 16 : 40, duration:duration + .2 }, .12)
+            .from(all('.cover-caption p'), { opacity:0, y:12, duration:.6, stagger:.1 }, .4);
         }
-        // Si se cambia de testimonio durante su entrada, ceder al carrusel original.
-        all('#testimonial-prev, #testimonial-next').forEach(button => {
-          listen(button, 'click', () => cancelFor(document.querySelector('.testimonial-slide')), true);
-        });
-      }
-
-      // Menú móvil: entrada de la cortina y sus enlaces. El cierre y el foco
-      // siguen perteneciendo a main.js; no se demora ni intercepta ningún clic.
-      const menu = document.querySelector('#menu');
-      let menuOpen = menu?.classList.contains('open') || false;
-      if (FEATURES.menu) {
-        const cancelMenu = () => [menu, ...all('#menu a')].forEach(cancelFor);
-        watch(menu, () => {
-          const open = menu.classList.contains('open');
-          if (open === menuOpen) return;
-          menuOpen = open;
-          if (!open || desktop.matches) { cancelMenu(); return; }
-          play(menu, [
-            { opacity:0, clipPath:'inset(0 0 12% 0)' },
-            { opacity:1, clipPath:'inset(0)' },
-          ], micro + 60);
-          all('a', menu).forEach((link, index) => {
-            play(link, [
-              { opacity:0, transform:'translateY(6px)' },
-              { opacity:1, transform:'translateY(0)' },
-            ], micro, 40 + index * 45);
+        // Whole text blocks preserve wrapping, semantics and the SVG lettering.
+        all('.reveal, .filters, #testimonials-title, .testimonial-slide, .testimonial-controls').forEach(element => {
+          if (seen.has(element) || element.hidden) return;
+          if (element.getBoundingClientRect().bottom <= 0) { seen.add(element); return; }
+          const text = all('.eyebrow, h2, p', element).filter(node => !node.closest('form'));
+          const isTextBlock = element.matches('.about-copy, .section-heading') || element.querySelector('#contact-title');
+          const targets = text.length && isTextBlock ? text : [element];
+          const siblings = [...element.parentElement.children].filter(node => node.matches('.reveal'));
+          const delay = compact ? 0 : Math.max(0, siblings.indexOf(element)) % 3 * .07;
+          const timeline = gsap.timeline({ paused:true, defaults:{ ease:'power3.out', duration } });
+          timeline.from(targets, { opacity:0, y:distance, stagger:compact ? .05 : .09 });
+          all('.photo-slot', element).forEach(slot => {
+            // Reveal frames and placeholders without changing any image crop.
+            timeline.fromTo(slot, { clipPath:'inset(0 0 100% 0)' }, {
+              clipPath:'inset(0 0 0% 0)', duration:duration + .15, clearProps:'clipPath',
+            }, 0);
           });
-        }, { attributes:true, attributeFilter:['class'] });
-        listen(desktop, 'change', cancelMenu);
-      }
-
-      // Navegación: un pulso de opacidad acompaña el cambio de sección activa,
-      // conservando exactamente el subrayado y color definidos por styles.css.
-      if (FEATURES.activeLink) {
-        const active = new WeakMap();
-        all('#menu a').forEach(link => {
-          active.set(link, link.classList.contains('active'));
-          watch(link, () => {
-            const selected = link.classList.contains('active');
-            if (selected && !active.get(link) && (desktop.matches || menu?.classList.contains('open'))) {
-              play(link, [{ opacity:.55 }, { opacity:1 }], micro);
-            }
-            active.set(link, selected);
-          }, { attributes:true, attributeFilter:['class'] });
+          entrances.set(element, timeline);
+          ScrollTrigger.create({ trigger:element, start:'top 92%', once:true,
+            onEnter:() => { seen.add(element); timeline.delay(delay).play(); },
+          });
         });
+        // Desktop only: slight relative travel, no pinning or layout changes.
+        if (!compact) {
+          all('.cover-title svg').forEach(element => gsap.to(element, {
+            y:36, ease:'none', scrollTrigger:{ trigger:'.hero-cover', start:'top top', end:'bottom top', scrub:.6 },
+          }));
+          all('.cover-portrait img').forEach(element => gsap.to(element, {
+            y:18, ease:'none', scrollTrigger:{ trigger:'.hero-cover', start:'top top', end:'bottom top', scrub:.6 },
+          }));
+        }
+      });
+      if (Lenis && !compact) {
+        lenis = new Lenis({ autoRaf:false, duration:.95, smoothWheel:true, syncTouch:false,
+          prevent:node => Boolean(node.closest('#lightbox, #menu, textarea, select, [data-lenis-prevent]')),
+        });
+        lenis.on('scroll', ScrollTrigger.update);
+        tick = time => lenis?.raf(time * 1000);
+        gsap.ticker.add(tick);
+        const syncModal = () => document.querySelector('#lightbox').open ? lenis?.stop() : lenis?.start();
+        watch(document.querySelector('#lightbox'), syncModal, { attributes:true, attributeFilter:['open'] });
+        syncModal();
       }
-
-      // Lightbox: acompañar la apertura/cierre ya existentes con un movimiento
-      // del escenario. El cierre dura menos que los 240 ms de main.js.
+      const menu = document.querySelector('#menu');
+      let menuOpen = menu?.classList.contains('open');
+      watch(menu, () => {
+        const open = menu.classList.contains('open');
+        if (open === menuOpen) return;
+        menuOpen = open;
+        animate(() => {
+          const links = all('a', menu);
+          gsap.killTweensOf(links);
+          if (open && matchMedia('(max-width: 991px)').matches) {
+            gsap.fromTo(links, { opacity:0, y:8 }, { opacity:1, y:0, duration:.3, stagger:.045, clearProps:'opacity,transform' });
+          } else gsap.set(links, { clearProps:'opacity,transform' });
+        });
+      }, { attributes:true, attributeFilter:['class'] });
       const dialog = document.querySelector('#lightbox');
-      const stage = dialog?.querySelector('.lightbox-stage');
-      if (FEATURES.lightbox && stage) {
-        let open = dialog.open && dialog.classList.contains('is-open');
-        watch(dialog, () => {
-          const next = dialog.open && dialog.classList.contains('is-open');
-          if (next === open) return;
-          open = next;
-          if (next) play(stage, [
-            { transform:'translateY(10px)' }, { transform:'translateY(0)' },
-          ], micro + 80);
-          else if (dialog.open) play(stage, [
-            { transform:'translateY(0)' }, { transform:'translateY(6px)' },
-          ], Math.min(micro, 200));
-          else cancelFor(stage);
-        }, { attributes:true, attributeFilter:['class', 'open'] });
-        watch(document.querySelector('#lightbox-image'), () => {
-          if (open) play(stage, [{ opacity:.55 }, { opacity:1 }], micro);
-        }, { attributes:true, attributeFilter:['src'] });
-        listen(dialog, 'close', () => cancelFor(stage));
+      watch(dialog, () => {
+        if (dialog.open) animate(() => gsap.fromTo('.lightbox-stage', { y:10 }, {
+          y:0, duration:.22, overwrite:true, clearProps:'transform',
+        }));
+      }, { attributes:true, attributeFilter:['open'] });
+      watch(document.querySelector('#lightbox-image'), () => {
+        if (dialog.open) animate(() => gsap.fromTo('.lightbox-photo', { opacity:.45 }, {
+          opacity:1, duration:.28, overwrite:true, clearProps:'opacity',
+        }));
+      }, { attributes:true, attributeFilter:['src'] });
+      all('img').forEach(img => { listen(img, 'load', refresh); listen(img, 'error', refresh); });
+      listen(window, 'load', refresh);
+      if (window.ResizeObserver) {
+        const observer = new ResizeObserver(refresh);
+        all('main > section, .site-header, .site-footer').forEach(element => observer.observe(element));
+        cleanups.push(() => observer.disconnect());
       }
-    } catch {
-      // Una falla de la capa opcional nunca deja contenido escondido.
+      document.fonts?.ready.then(refresh);
+      listen(document, 'focusin', event => {
+        for (const [element, timeline] of entrances) {
+          if (element.contains(event.target)) { seen.add(element); timeline.progress(1); }
+        }
+      });
+      refresh();
+    } catch (error) {
       stop();
+      console.warn('La capa de animaciones se desactivó; el contenido sigue disponible.', error);
     }
   }
-
   function stop() {
     enabled = false;
-    root.classList.remove(...classes);
-    [...running].forEach(animation => animation.cancel());
-    running.clear();
-    owned.clear();
-    dispose.splice(0).forEach(cleanup => cleanup());
+    refreshCall?.kill();
+    cleanups.splice(0).forEach(cleanup => cleanup());
+    if (tick) gsap.ticker.remove(tick);
+    lenis?.destroy();
+    lenis = tick = null;
+    context?.revert();
+    context = null;
+    entrances.clear();
+    root.classList.remove('vc-motion', 'vc-hover');
   }
-
-  // Controles para probar o desactivar la capa sin tocar el diseño existente.
   window.VictoriaMotion = {
+    get enabled() { return enabled; },
     disable() { stopped = true; stop(); },
     enable() { stopped = false; start(); },
-    get enabled() { return enabled; },
+    refresh,
+    scrollTo(target, hash) {
+      if (!enabled || !lenis) return false;
+      lenis.scrollTo(target, { offset:-(document.querySelector('.site-header').offsetHeight + 16), onComplete:() => {
+        if (location.hash !== hash) history.pushState(null, '', hash);
+        const previous = target.getAttribute('tabindex');
+        target.setAttribute('tabindex', '-1');
+        target.focus({ preventScroll:true });
+        if (previous === null) target.removeAttribute('tabindex');
+        else target.setAttribute('tabindex', previous);
+      } });
+      return true;
+    },
+    prepareFilter() {
+      if (!enabled) return;
+      for (const [element, timeline] of entrances) {
+        if (element.matches('.gallery-item')) { seen.add(element); timeline.progress(1); }
+      }
+      gsap.killTweensOf(all('.gallery-item'));
+      animate(() => gsap.set(all('.gallery-item'), { clearProps:'opacity,transform' }));
+    },
+    filterItem(item, before, after) {
+      if (item.closest('[data-motion="off"]')) return;
+      animate(() => gsap.fromTo(item, {
+        opacity:before ? 1 : 0, x:before ? before.left - after.left : 0,
+        y:before ? before.top - after.top : 12,
+      }, { opacity:1, x:0, y:0, duration:.5, ease:'power3.out', clearProps:'opacity,transform', overwrite:true }));
+    },
+    testimonial() {
+      const element = document.querySelector('#opinion');
+      if (element.closest('[data-motion="off"]')) return;
+      entrances.get(element)?.progress(1);
+      animate(() => gsap.fromTo(element, { opacity:0, y:8 }, {
+        opacity:1, y:0, duration:.4, overwrite:true, clearProps:'opacity,transform',
+      }));
+      refresh();
+    },
   };
-  reduced.addEventListener('change', () => { stop(); if (!reduced.matches) start(); });
+  reduced.addEventListener('change', () => { stop(); start(); });
+  desktop.addEventListener('change', () => { stop(); start(); });
   window.addEventListener('pagehide', stop);
   window.addEventListener('pageshow', event => { if (event.persisted) start(); });
   start();
